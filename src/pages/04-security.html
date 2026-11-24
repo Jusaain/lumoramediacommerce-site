@@ -1,0 +1,129 @@
+<!--META {"title": "Architecture, Security & Google API Compliance - Lumora Media Commerce", "desc": "How Lumora Media Commerce protects Google Ads data: OAuth 2.0 with PKCE, TLS 1.2/1.3 encryption in transit, a single least-privilege adwords scope, credential isolation with 0600 file permissions, instant revocation and Limited Use compliance.", "path": "/security/", "nav": "security"} -->
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumbs"><a href="/">Home</a> / Security</div>
+    <h1>Lumora Media Commerce architecture, security &amp; Google API compliance</h1>
+    <p class="lead">Lumora Media Commerce is designed around a small, auditable footprint: one OAuth scope, official Google endpoints only, encrypted transport, isolated credentials and a single output, the reporting export. This page documents each control.</p>
+    <div class="page-meta"><span class="pill"><span class="dot"></span>OAuth 2.0 + PKCE</span><span class="pill">TLS 1.2 / 1.3</span><span class="pill">Single scope</span><span class="pill">Limited Use</span></div>
+  </div>
+</section>
+
+<section class="section band-dark">
+  <div class="wrap">
+    <div class="section-head">
+      <div><span class="kicker">Architecture</span><h2>Two trust zones, one encrypted path between them.</h2></div>
+      <p>Identity and data stay on Google's infrastructure until a report is requested. Only the requested reporting fields cross into the Lumora Media Commerce environment, over HTTPS, and only structured reports leave the normalization engine.</p>
+    </div>
+    <figure class="diagram">
+      <div class="diagram-head"><h3>Data flow &amp; security architecture</h3><span>OAuth 2.0 + PKCE → Google Ads API v23 → normalization → exports</span></div>
+      {{ARCH}}
+    </figure>
+  </div>
+</section>
+
+<div class="wrap doc-layout">
+  <aside class="toc" aria-label="Contents">
+    <h4>Controls</h4>
+    <ol>
+      <li><a href="#oauth">1. OAuth 2.0 with PKCE</a></li>
+      <li><a href="#scope">2. Least-privilege scope</a></li>
+      <li><a href="#transport">3. Encryption in transit</a></li>
+      <li><a href="#credentials">4. Credential isolation</a></li>
+      <li><a href="#data">5. Data minimization</a></li>
+      <li><a href="#revocation">6. Revocation &amp; deletion</a></li>
+      <li><a href="#limited-use">7. Limited Use compliance</a></li>
+      <li><a href="#website">8. Website security</a></li>
+      <li><a href="#reporting">9. Reporting a concern</a></li>
+    </ol>
+  </aside>
+  <div class="prose">
+
+    <section id="oauth">
+      <h2><span class="n">01</span>OAuth 2.0 authorization with PKCE</h2>
+      <p>Access to Google Ads data is granted exclusively through Google's OAuth 2.0 authorization code flow. Passwords are never seen, requested or stored by Lumora Media Commerce: the authorizing administrator authenticates with Google directly on Google's own consent screen.</p>
+      <p>The flow uses Proof Key for Code Exchange (PKCE, RFC 7636) with the S256 method, which binds the authorization code to the client instance that started the flow and prevents interception attacks.</p>
+      <ol>
+        <li>A random <code>code_verifier</code> is generated and its SHA-256 hash is sent as <code>code_challenge</code> with <code>code_challenge_method=S256</code>.</li>
+        <li>The administrator reviews the requested scope on Google's consent screen and approves or declines.</li>
+        <li>Google returns a one-time authorization code, which is exchanged together with the original <code>code_verifier</code> at <code>https://oauth2.googleapis.com/token</code>.</li>
+        <li>Google issues a short-lived access token (typically valid for one hour) and a refresh token that remains revocable by the user at any time.</li>
+      </ol>
+<pre data-lang="http" data-label="Authorization request parameters">
+GET https://accounts.google.com/o/oauth2/v2/auth
+  ?client_id={client_id}
+  &redirect_uri={registered_redirect_uri}
+  &response_type=code
+  &scope=https://www.googleapis.com/auth/adwords
+  &code_challenge={base64url(sha256(code_verifier))}
+  &code_challenge_method=S256
+  &access_type=offline
+  &state={random_state}
+</pre>
+    </section>
+
+    <section id="scope">
+      <h2><span class="n">02</span>Least-privilege, single-scope design</h2>
+      <p>Lumora Media Commerce requests exactly one scope: <code>https://www.googleapis.com/auth/adwords</code>. It is the only scope the Google Ads API offers and is required both for GAQL reporting and for Keyword Planner research. No scope for Gmail, Google Drive, Calendar, Contacts, YouTube or any other Google product is requested, and the application cannot access those services.</p>
+      <div class="dtable-wrap"><table class="dtable">
+        <thead><tr><th>Requested</th><th>Not requested</th></tr></thead>
+        <tbody><tr><td><code>https://www.googleapis.com/auth/adwords</code></td><td>Gmail, Google Drive, Google Calendar, Google Contacts, YouTube, Google Cloud, Merchant Center, profile scopes beyond Google's defaults</td></tr></tbody>
+      </table></div>
+      <p>Within this scope, the reporting and research modules use Google Ads services designed for retrieval: <code>GoogleAdsService</code> search and searchStream for GAQL reports and <code>KeywordPlanIdeaService</code> for keyword ideas and historical metrics.</p>
+    </section>
+
+    <section id="transport">
+      <h2><span class="n">03</span>Encryption in transit</h2>
+      <p>All traffic between Lumora Media Commerce and Google (the OAuth endpoints and <code>googleads.googleapis.com</code>) is sent over HTTPS with TLS 1.2 or TLS 1.3 and certificate validation enabled. Unencrypted HTTP is never used for API traffic. This website is likewise served exclusively over HTTPS; plain HTTP requests are redirected to HTTPS.</p>
+    </section>
+
+    <section id="credentials">
+      <h2><span class="n">04</span>Credential isolation</h2>
+      <p>OAuth client secrets, refresh tokens and the Google Ads developer token are treated as secrets:</p>
+      <ul>
+        <li>Stored on access-controlled systems in files with permission mode <code>0600</code>, readable only by the service user that runs the reports.</li>
+        <li>Never committed to source control, never embedded in web pages and never stored in a browser.</li>
+        <li>Never written to logs, error messages or reporting exports.</li>
+        <li>Access limited to authorized Lumora Media LLC personnel who need it to operate the service.</li>
+      </ul>
+      <p>Access tokens are kept in memory for their short lifetime and refreshed on demand. If a credential is suspected to be exposed, it is revoked at Google and replaced immediately.</p>
+    </section>
+
+    <section id="data">
+      <h2><span class="n">05</span>Data minimization</h2>
+      <p>Each GAQL query selects only the fields needed for the report it produces; there are no full-account dumps. Reporting data consists of advertising statistics and account metadata. Lumora Media Commerce does not process end-customer personal data, payment card details or the content of any other Google service.</p>
+      <p>Exports are retained only as long as needed for reporting, year-over-year seasonality comparison and statutory record-keeping, and are deleted on verified request within 30 days. Details are set out in the <a href="/privacy-policy/">Privacy Policy</a>.</p>
+    </section>
+
+    <section id="revocation">
+      <h2><span class="n">06</span>Instant revocation &amp; deletion</h2>
+      <p>Users stay in control at every point:</p>
+      <ul>
+        <li><strong>Revoke access instantly</strong> at <a href="https://myaccount.google.com/permissions" rel="noopener">myaccount.google.com/permissions</a> by removing Lumora Media Commerce. The refresh token stops working immediately and no further data can be retrieved.</li>
+        <li><strong>Revoke programmatically</strong>: tokens are also revoked through Google's endpoint <code>https://oauth2.googleapis.com/revoke</code> when a connection is ended by Lumora Media LLC.</li>
+        <li><strong>Request deletion</strong> of stored reporting data by email to <a href="mailto:info@lumoramediacommerce.com">info@lumoramediacommerce.com</a>. Verified requests are completed within 30 days and confirmed in writing.</li>
+      </ul>
+    </section>
+
+    <section id="limited-use">
+      <h2><span class="n">07</span>Google API Services User Data Policy &amp; Limited Use</h2>
+      <div class="callout green"><p>Lumora Media Commerce's use and transfer to any other app of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements.</p></div>
+      <p>Lumora Media Commerce also complies with the <a href="https://developers.google.com/terms" rel="noopener">Google APIs Terms of Service</a> and the Google Ads API Terms and Conditions. In practice this means:</p>
+      <ul>
+        <li>Google user data is used only to provide and improve the user-facing reporting and research features described on this website.</li>
+        <li>It is not transferred to others except as necessary to provide those features, to comply with applicable law, or as part of a merger or acquisition with prior notice.</li>
+        <li>It is never used to serve, target or retarget advertising, never sold and never used to build user profiles for unrelated purposes.</li>
+        <li>No person reads Google user data unless the user has given explicit consent, it is necessary for security purposes such as investigating abuse, it is required by law, or the data is aggregated and anonymized for internal operations.</li>
+      </ul>
+    </section>
+
+    <section id="website">
+      <h2><span class="n">08</span>Website security &amp; privacy</h2>
+      <p>This website is a set of static HTML and CSS pages. It contains no forms, no client-side application code, no third-party scripts, no cookies and no tracking pixels, so there is no session to hijack and no visitor data to leak. All pages are publicly accessible without registration.</p>
+    </section>
+
+    <section id="reporting">
+      <h2><span class="n">09</span>Reporting a security concern</h2>
+      <p>Security or privacy concerns, including suspected vulnerabilities, can be reported to <a href="mailto:info@lumoramediacommerce.com">info@lumoramediacommerce.com</a> with the subject line "Security". Reports are reviewed promptly by Lumora Media LLC, and good-faith research that respects user privacy is welcome.</p>
+    </section>
+  </div>
+</div>

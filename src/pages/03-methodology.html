@@ -1,0 +1,149 @@
+<!--META {"title": "Search Demand & E-Commerce Analytics Methodology - Lumora Media Commerce", "desc": "The Lumora Media Commerce methodology: 12-month seasonality modeling from Keyword Planner data, northern and southern hemisphere calendar planning, break-even ROAS and contribution margin, search-term intent filtering and catalog title optimization.", "path": "/methodology/", "nav": "methodology"} -->
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumbs"><a href="/">Home</a> / Methodology</div>
+    <h1>Lumora Media Commerce search demand &amp; e-commerce analytics methodology</h1>
+    <p class="lead">How Lumora Media Commerce turns Google Ads reporting and Keyword Planner data into decisions: when demand peaks in each market, what a click is worth, which queries deserve budget and how product titles should be written to match real searches.</p>
+    <div class="page-meta"><span class="pill">Editorial guide</span><span class="pill">6 chapters</span><span class="pill">Updated November 2026</span></div>
+  </div>
+</section>
+
+<div class="wrap doc-layout">
+  <aside class="toc" aria-label="Contents">
+    <h4>Contents</h4>
+    <ol>
+      <li><a href="#seasonality">1. Seasonality modeling</a></li>
+      <li><a href="#hemispheres">2. Hemisphere calendars</a></li>
+      <li><a href="#roas">3. Break-even ROAS &amp; margin</a></li>
+      <li><a href="#cpc">4. CPC benchmarking</a></li>
+      <li><a href="#intent">5. Search-term intent filtering</a></li>
+      <li><a href="#titles">6. Catalog title optimization</a></li>
+    </ol>
+  </aside>
+  <div class="prose">
+    <p class="serif-lead">Advertising data is only useful when it is read in context. A click in Sydney in July, a conversion value that still contains VAT, a keyword that looks cheap but never sells: each of these leads to wrong decisions when the context is missing. This guide documents the context Lumora Media Commerce applies.</p>
+
+    <section id="seasonality">
+      <h2><span class="n">01</span>12-month seasonality modeling</h2>
+      <p>Keyword Planner returns, for every keyword, the number of searches in each of the last twelve months (<code>monthlySearchVolumes</code>) alongside the 12-month average (<code>avgMonthlySearches</code>). The absolute numbers describe market size. The shape of the curve describes timing, and timing drives budget and inventory decisions.</p>
+      <p>Lumora Media Commerce converts each series into a <strong>seasonality index</strong>: the volume of a month divided by the mean of all twelve months. An index of 1.00 is an average month, 1.80 means demand is 80% above average, and 0.50 means half the average.</p>
+      <div class="formula">index[m] = <span class="hl">volume[m] / ( Σ volume[1..12] / 12 )</span><br>peak_month = <span class="hl">argmax(index)</span>   ramp_start = <span class="hl">peak_month − lead_time</span></div>
+      <p>Category indexes are built by summing the volumes of all keywords in a category before indexing, so that a single high-volume keyword cannot distort the curve. Three practical rules follow from the index:</p>
+      <ul>
+        <li><strong>Lead time matters more than the peak.</strong> Search interest typically starts rising four to six weeks before the peak month. Campaign budgets, feeds and stock should be ready at the start of the ramp, not at the peak.</li>
+        <li><strong>Compare like with like.</strong> A month is compared with the same month of the previous year, not with the previous month, when the category is strongly seasonal.</li>
+        <li><strong>Flat curves are a signal too.</strong> An index that stays between 0.85 and 1.15 all year indicates evergreen demand that can be planned with stable budgets.</li>
+      </ul>
+      <div class="dtable-wrap"><table class="dtable">
+        <thead><tr><th>Index range</th><th>Interpretation</th><th>Planning response</th></tr></thead>
+        <tbody>
+          <tr><th>&ge; 1.50</th><td>Peak season</td><td>Full budget, complete size and color availability, seasonal titles</td></tr>
+          <tr><th>1.10 to 1.49</th><td>Ramp or shoulder</td><td>Increase budgets in steps, launch new products</td></tr>
+          <tr><th>0.90 to 1.09</th><td>Average demand</td><td>Steady-state bidding</td></tr>
+          <tr><th>&lt; 0.90</th><td>Off season</td><td>Reduce spend, shift focus to counter-seasonal markets</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="hemispheres">
+      <h2><span class="n">02</span>Northern vs. southern hemisphere calendars</h2>
+      <p>Four of the five supported markets (United States, United Kingdom, Germany, Switzerland) share the northern hemisphere calendar. Australia lies in the southern hemisphere, where meteorological summer runs from December to February and winter from June to August. A summer collection that peaks in June in London peaks in December in Melbourne.</p>
+      <p>This inversion is an opportunity: inventory and creative that are out of season in one hemisphere are in season in the other. It is also a frequent source of error when campaigns are cloned across markets without adjusting timing.</p>
+      <div class="dtable-wrap"><table class="dtable">
+        <thead><tr><th>Months</th><th>US · UK · DE · CH</th><th>Australia</th><th>Shared retail moments</th></tr></thead>
+        <tbody>
+          <tr><th>Dec to Feb</th><td>Winter</td><td>Summer</td><td>Christmas, Boxing Day (UK, AU), January sales</td></tr>
+          <tr><th>Mar to May</th><td>Spring</td><td>Autumn</td><td>Mothering Sunday (UK, March or April); Mother's Day (US, DE, CH, AU, second Sunday of May)</td></tr>
+          <tr><th>Jun to Aug</th><td>Summer</td><td>Winter</td><td>UK summer sales; Australian end of financial year sales (June); back-to-school (US)</td></tr>
+          <tr><th>Sep to Nov</th><td>Autumn</td><td>Spring</td><td>Black Friday and Cyber Monday in all five markets; Click Frenzy (AU)</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout blue"><span class="callout-title">Planning consequence</span><p>Black Friday falls in late autumn in the northern hemisphere but in late spring in Australia. The same promotion date therefore needs winter products in the US and Europe and summer products in Australia.</p></div>
+    </section>
+
+    <section id="roas">
+      <h2><span class="n">03</span>Break-even ROAS &amp; contribution margin</h2>
+      <p>Return on ad spend (ROAS) is conversion value divided by advertising cost. On its own, a ROAS figure says nothing about profitability. It must be compared with the <strong>break-even ROAS</strong>, the point at which the contribution margin of the sale exactly pays for the advertising.</p>
+      <div class="formula">contribution_margin = <span class="hl">net_price − product_cost − shipping − payment_fees − returns_allowance</span><br>margin_rate = <span class="hl">contribution_margin / net_price</span><br>break_even_ROAS = <span class="hl">1 / margin_rate</span></div>
+      <h3>Remove sales tax first</h3>
+      <p>Conversion values reported by shop systems usually contain VAT or GST in Europe and Australia, while US prices are typically shown before sales tax. Before any ROAS comparison, conversion values are converted to net values with the standard rate of each market.</p>
+      <div class="dtable-wrap"><table class="dtable">
+        <thead><tr><th>Market</th><th>Standard rate</th><th>Net factor</th></tr></thead>
+        <tbody>
+          <tr><th>Germany</th><td>VAT 19%</td><td class="num">÷ 1.19</td></tr>
+          <tr><th>United Kingdom</th><td>VAT 20%</td><td class="num">÷ 1.20</td></tr>
+          <tr><th>Switzerland</th><td>VAT 8.1%</td><td class="num">÷ 1.081</td></tr>
+          <tr><th>Australia</th><td>GST 10%</td><td class="num">÷ 1.10</td></tr>
+          <tr><th>United States</th><td>Sales tax added at checkout, varies by state</td><td class="num">usually ÷ 1.00</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Worked example</h3>
+      <div class="dtable-wrap"><table class="dtable">
+        <thead><tr><th>Line</th><th class="num">Amount (EUR)</th></tr></thead>
+        <tbody>
+          <tr><td>Gross price incl. 19% VAT</td><td class="num">79.00</td></tr>
+          <tr><td>Net price</td><td class="num">66.39</td></tr>
+          <tr><td>Product cost</td><td class="num">−21.00</td></tr>
+          <tr><td>Shipping and packaging</td><td class="num">−6.50</td></tr>
+          <tr><td>Payment fees (approx. 2.5%)</td><td class="num">−1.98</td></tr>
+          <tr><td>Returns allowance</td><td class="num">−4.00</td></tr>
+          <tr><th>Contribution margin</th><th class="num">32.91 (49.6%)</th></tr>
+          <tr><th>Break-even ROAS on net value</th><th class="num">2.02</th></tr>
+          <tr><th>Break-even ROAS on gross value</th><th class="num">2.40</th></tr>
+        </tbody>
+      </table></div>
+      <p>Campaigns are evaluated against the break-even line that matches the way conversion value is reported. A gross-value ROAS of 2.2 looks profitable when compared with the net break-even of 2.02, but it is below the gross break-even of 2.40 and therefore loses money.</p>
+    </section>
+
+    <section id="cpc">
+      <h2><span class="n">04</span>CPC benchmarking</h2>
+      <p>Keyword Planner reports a top-of-page bid range per keyword. The low value is the 20th percentile and the high value the 80th percentile of bids that won a top-of-page position, together with the historical average CPC. These figures describe the market. Whether a click is affordable depends on the shop's own numbers:</p>
+      <div class="formula">break_even_CPC = <span class="hl">average_order_value_net × conversion_rate × margin_rate</span><br>example: 66.39 × 2.0% × 49.6% = <span class="hl">0.66 EUR</span></div>
+      <p>When the break-even CPC lies below the low end of the bid range, the keyword is unlikely to be profitable at top-of-page positions and is deprioritized or reserved for Shopping, where product images and prices pre-qualify the click. When it lies above the high end, the keyword has room for growth.</p>
+    </section>
+
+    <section id="intent">
+      <h2><span class="n">05</span>Search-term intent filtering</h2>
+      <p>The search-term report shows the actual queries behind each click. Lumora Media Commerce classifies them into intent tiers so budget follows buying intent:</p>
+      <ul>
+        <li><strong>Transactional</strong>: product noun plus attribute, size, color or a buying modifier such as "buy" or "sale". Highest priority.</li>
+        <li><strong>Commercial</strong>: comparison and quality modifiers such as "best", "vs" or "review". Valuable when the assortment wins the comparison.</li>
+        <li><strong>Informational</strong>: "how to", care instructions, definitions, patterns and do-it-yourself queries. Rarely convert in Shopping and Search.</li>
+        <li><strong>Navigational</strong>: other brands or marketplaces. Reported separately.</li>
+      </ul>
+      <div class="callout green"><span class="callout-title">Purchase-keyword protection</span><p>Exclusions are only proposed for informational or irrelevant modifiers. Product nouns that describe the shop's own assortment are kept on a protected list and are never proposed as negative keywords, even when a single query performed poorly, because excluding them would block the shop's most valuable traffic.</p></div>
+      <p>N-gram aggregation sums cost and conversions per word and per two-word fragment across all queries. A modifier that appears in hundreds of low-volume queries is invisible row by row but obvious in aggregate.</p>
+    </section>
+
+    <section id="titles">
+      <h2><span class="n">06</span>Catalog title optimization</h2>
+      <p>In Google Shopping, the product title is the strongest relevance signal and the most visible text in the ad. Titles can be up to 150 characters, but only the first part is visible in most placements, so the words people actually search must come first.</p>
+      <div class="formula">title = <span class="hl">product type + key attribute (material, fit) + audience + color / variant + brand</span></div>
+      <p>Keyword Planner volumes decide the vocabulary per market. The same product needs different words in different English-speaking markets, and German compound nouns behave differently from English phrases:</p>
+      <div class="dtable-wrap"><table class="dtable">
+        <thead><tr><th>Concept</th><th>US</th><th>UK</th><th>AU</th><th>DE / CH</th></tr></thead>
+        <tbody>
+          <tr><th>Knitted top</th><td>sweater</td><td>jumper</td><td>jumper</td><td>Pullover</td></tr>
+          <tr><th>Leg wear</th><td>pants</td><td>trousers</td><td>pants</td><td>Hose</td></tr>
+          <tr><th>Sandals with toe post</th><td>flip-flops</td><td>flip-flops</td><td>thongs</td><td>Zehentrenner</td></tr>
+          <tr><th>Linen dress</th><td>linen dress</td><td>linen dress</td><td>linen dress</td><td>Leinenkleid</td></tr>
+        </tbody>
+      </table></div>
+      <ul>
+        <li>Use the singular form that matches the dominant search query, and keep sizes in the market's sizing system.</li>
+        <li>Avoid promotional text, capital-letter emphasis and pricing in titles; price and promotions belong in their own feed attributes.</li>
+        <li>Re-check titles after each seasonality cycle, because the vocabulary of searches shifts with the season.</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<section class="cta-band band-dark">
+  <div class="wrap cta-inner">
+    <div>
+      <h2>Methodology runs on official Google data only.</h2>
+      <p>Every figure in this guide comes from the Google Ads API under the single <code>adwords</code> scope. Read how the data is protected.</p>
+    </div>
+    <div class="btn-row"><a class="btn btn-light" href="/security/">Security &amp; compliance <span class="arr" aria-hidden="true">&rarr;</span></a><a class="btn btn-outline-light" href="/platform/">Platform modules</a></div>
+  </div>
+</section>

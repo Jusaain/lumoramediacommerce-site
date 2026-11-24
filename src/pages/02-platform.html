@@ -1,0 +1,266 @@
+<!--META {"title": "Platform & Reporting Modules - Lumora Media Commerce", "desc": "Lumora Media Commerce platform modules: Google Ads account discovery, GAQL campaign and Shopping reporting, search-term intent analysis, Keyword Planner ideas and historical metrics, multi-market normalization and JSON/CSV export schemas.", "path": "/platform/", "nav": "platform"} -->
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumbs"><a href="/">Home</a> / Platform</div>
+    <h1>Lumora Media Commerce platform &amp; reporting modules</h1>
+    <p class="lead">Eight modules turn official Google Ads API responses into consistent, currency-aware reporting for Google Shopping and Search. Each module below lists the exact resource or service it calls, the fields it reads and the structure it produces.</p>
+    <div class="page-meta"><span class="pill"><span class="dot"></span>Google Ads API v23</span><span class="pill">REST + JSON</span><span class="pill">GAQL</span><span class="pill">KeywordPlanIdeaService</span></div>
+    <nav class="subnav" aria-label="Modules">
+      <a href="#m1">M1 Account discovery</a><a href="#m2">M2 Campaign performance</a><a href="#m3">M3 Shopping attribution</a><a href="#m4">M4 Search terms</a><a href="#m5">M5 Keyword ideas</a><a href="#m6">M6 Historical metrics</a><a href="#m7">M7 Normalization</a><a href="#m8">M8 Exports</a>
+    </nav>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap">
+
+    <article class="module" id="m1">
+      <div class="module-side"><span class="m-idx">M1</span><h3>Account &amp; hierarchy discovery</h3><div class="m-tags"><span class="pill">customers</span><span class="pill">customer_client</span></div></div>
+      <div class="module-body">
+        <p>After authorization, Lumora Media Commerce lists the Google Ads customer IDs the authorizing user can access and reads the manager-account hierarchy. Only descriptive account metadata is stored: customer ID, name, currency and time zone. These four values determine how every later report is labeled, converted and bucketed by day.</p>
+<pre data-lang="http" data-label="List accessible customers">
+# Returns resource names such as customers/1234567890
+GET https://googleads.googleapis.com/v23/customers:listAccessibleCustomers
+Authorization: Bearer {access_token}
+developer-token: {developer_token}
+</pre>
+<pre data-lang="gaql" data-label="GAQL · customer_client hierarchy">
+SELECT
+  customer_client.id,
+  customer_client.descriptive_name,
+  customer_client.currency_code,
+  customer_client.time_zone,
+  customer_client.manager,
+  customer_client.level
+FROM customer_client
+WHERE customer_client.level <= 1
+</pre>
+      </div>
+    </article>
+
+    <article class="module" id="m2">
+      <div class="module-side"><span class="m-idx">M2</span><h3>Campaign performance reporting</h3><div class="m-tags"><span class="pill">campaign</span><span class="pill">searchStream</span></div></div>
+      <div class="module-body">
+        <p>Daily performance per campaign is retrieved with a single streamed GAQL query per account. Cost arrives in micros (one millionth of the account currency) and is converted in M7. The module supports Shopping, Search and Performance Max channel types and keeps the advertising channel type on every row, so Shopping and Search can be reported separately or blended.</p>
+<pre data-lang="http" data-label="Endpoint">
+POST https://googleads.googleapis.com/v23/customers/{customer_id}/googleAds:searchStream
+Content-Type: application/json
+</pre>
+<pre data-lang="gaql" data-label="GAQL · campaign performance, last 30 days">
+SELECT
+  campaign.id,
+  campaign.name,
+  campaign.advertising_channel_type,
+  segments.date,
+  segments.device,
+  metrics.impressions,
+  metrics.clicks,
+  metrics.cost_micros,
+  metrics.conversions,
+  metrics.conversions_value
+FROM campaign
+WHERE segments.date DURING LAST_30_DAYS
+  AND campaign.status = 'ENABLED'
+ORDER BY segments.date DESC
+</pre>
+        <div class="two-col">
+          <div class="mini"><h4>Derived metrics</h4><p>CTR = clicks / impressions · CPC = cost / clicks · ROAS = conversion value / cost · CPA = cost / conversions. Derived values are computed after currency conversion, never averaged across rows.</p></div>
+          <div class="mini"><h4>Comparisons</h4><p>Every report can be paired with the preceding period of equal length and the same period of the previous year, using the account time zone for day boundaries.</p></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="module" id="m3">
+      <div class="module-side"><span class="m-idx">M3</span><h3>Shopping product-group attribution</h3><div class="m-tags"><span class="pill">shopping_performance_view</span></div></div>
+      <div class="module-body">
+        <p>Google Shopping results are attributed down to the individual product item and rolled up by brand, product type and custom label. This is how catalogs are evaluated: which product groups carry spend, which convert, and which items accumulate cost without sales.</p>
+<pre data-lang="gaql" data-label="GAQL · Shopping item performance">
+SELECT
+  segments.product_item_id,
+  segments.product_title,
+  segments.product_brand,
+  segments.product_type_l1,
+  segments.product_custom_attribute0,
+  metrics.impressions,
+  metrics.clicks,
+  metrics.cost_micros,
+  metrics.conversions,
+  metrics.conversions_value
+FROM shopping_performance_view
+WHERE segments.date DURING LAST_30_DAYS
+  AND metrics.impressions > 0
+</pre>
+        <div class="dtable-wrap"><table class="dtable">
+          <thead><tr><th>Rollup level</th><th>Source field</th><th>Typical use</th></tr></thead>
+          <tbody>
+            <tr><th>Item</th><td><code>segments.product_item_id</code></td><td>Identify individual products with cost but no conversions</td></tr>
+            <tr><th>Brand</th><td><code>segments.product_brand</code></td><td>Compare house brands and resold brands</td></tr>
+            <tr><th>Product type</th><td><code>segments.product_type_l1</code> to <code>l5</code></td><td>Category-level ROAS and assortment planning</td></tr>
+            <tr><th>Custom label</th><td><code>segments.product_custom_attribute0</code> to <code>4</code></td><td>Margin tiers, seasonality flags, bestseller groups</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </article>
+
+    <article class="module" id="m4">
+      <div class="module-side"><span class="m-idx">M4</span><h3>Search-term &amp; intent analysis</h3><div class="m-tags"><span class="pill">search_term_view</span></div></div>
+      <div class="module-body">
+        <p>The actual queries that triggered ads are read from the search-term report and classified into intent tiers. Single words and two-word fragments (n-grams) are aggregated across all queries, which reveals patterns that are invisible at the level of individual search terms, such as a recurring "free" or "pattern" modifier that consumes budget without purchases.</p>
+<pre data-lang="gaql" data-label="GAQL · search terms">
+SELECT
+  search_term_view.search_term,
+  search_term_view.status,
+  campaign.name,
+  ad_group.name,
+  metrics.impressions,
+  metrics.clicks,
+  metrics.cost_micros,
+  metrics.conversions,
+  metrics.conversions_value
+FROM search_term_view
+WHERE segments.date DURING LAST_30_DAYS
+ORDER BY metrics.cost_micros DESC
+LIMIT 5000
+</pre>
+        <div class="dtable-wrap"><table class="dtable">
+          <thead><tr><th>Intent tier</th><th>Signal</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><th>Transactional</th><td>Product noun with buying modifier, size or color</td><td><code>linen dress women size 12</code></td></tr>
+            <tr><th>Commercial</th><td>Comparison or quality modifiers</td><td><code>best merino jumper uk</code></td></tr>
+            <tr><th>Informational</th><td>How-to, care, definitions</td><td><code>how to wash linen</code></td></tr>
+            <tr><th>Navigational</th><td>Third-party brand or marketplace names</td><td>Reported separately, never mixed into category totals</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </article>
+
+    <article class="module" id="m5">
+      <div class="module-side"><span class="m-idx">M5</span><h3>Keyword idea discovery</h3><div class="m-tags"><span class="pill">generateKeywordIdeas</span></div></div>
+      <div class="module-body">
+        <p>Keyword ideas expand a short list of category seeds into the related queries people search in a specific market and language. The geo target and language constants come from the market definition in M7, so a German seed is researched in German for Germany and Switzerland and an English seed for the US, UK and Australia.</p>
+<pre data-lang="http" data-label="Endpoint">
+POST https://googleads.googleapis.com/v23/customers/{customer_id}:generateKeywordIdeas
+</pre>
+<pre data-lang="json" data-label="Request body">
+{
+  "language": "languageConstants/1000",
+  "geoTargetConstants": ["geoTargetConstants/2036"],
+  "keywordPlanNetwork": "GOOGLE_SEARCH",
+  "keywordSeed": { "keywords": ["linen dress", "summer midi dress"] }
+}
+</pre>
+      </div>
+    </article>
+
+    <article class="module" id="m6">
+      <div class="module-side"><span class="m-idx">M6</span><h3>Historical metrics &amp; CPC benchmarking</h3><div class="m-tags"><span class="pill">generateKeywordHistoricalMetrics</span></div></div>
+      <div class="module-body">
+        <p>For a defined keyword list, historical metrics return the average monthly search volume, the volume for each of the last twelve months, the competition level and index, the low and high top-of-page bid range and the historical average CPC. Integer values are returned as strings in JSON and are parsed before analysis. The sample values below are illustrative.</p>
+<pre data-lang="http" data-label="Endpoint">
+POST https://googleads.googleapis.com/v23/customers/{customer_id}:generateKeywordHistoricalMetrics
+</pre>
+<pre data-lang="json" data-label="Request body">
+{
+  "keywords": ["linen dress"],
+  "language": "languageConstants/1000",
+  "geoTargetConstants": ["geoTargetConstants/2840"],
+  "keywordPlanNetwork": "GOOGLE_SEARCH",
+  "historicalMetricsOptions": { "includeAverageCpc": true }
+}
+</pre>
+<pre data-lang="json" data-label="Response excerpt · illustrative values">
+{
+  "results": [{
+    "text": "linen dress",
+    "keywordMetrics": {
+      "avgMonthlySearches": "40500",
+      "monthlySearchVolumes": [
+        { "month": "DECEMBER", "year": "2025", "monthlySearches": "22200" },
+        { "month": "MAY", "year": "2026", "monthlySearches": "60500" },
+        { "month": "JUNE", "year": "2026", "monthlySearches": "74000" }
+      ],
+      "competition": "HIGH",
+      "competitionIndex": "87",
+      "lowTopOfPageBidMicros": "620000",
+      "highTopOfPageBidMicros": "1940000",
+      "averageCpcMicros": "1130000"
+    }
+  }]
+}
+</pre>
+        <div class="dtable-wrap"><table class="dtable">
+          <thead><tr><th>Field</th><th>Meaning</th><th>How it is used</th></tr></thead>
+          <tbody>
+            <tr><th><code>avgMonthlySearches</code></th><td>Approximate average monthly searches over the last 12 months</td><td>Demand size per market</td></tr>
+            <tr><th><code>monthlySearchVolumes</code></th><td>Searches per calendar month, 12 entries</td><td>Seasonality index and launch timing</td></tr>
+            <tr><th><code>competition</code> / <code>competitionIndex</code></th><td>Ad competition level (LOW, MEDIUM, HIGH) and index 0 to 100</td><td>Auction pressure benchmark</td></tr>
+            <tr><th><code>lowTopOfPageBidMicros</code></th><td>Lower range of top-of-page bids (20th percentile)</td><td>Entry bid reference</td></tr>
+            <tr><th><code>highTopOfPageBidMicros</code></th><td>Upper range of top-of-page bids (80th percentile)</td><td>Competitive ceiling reference</td></tr>
+            <tr><th><code>averageCpcMicros</code></th><td>Historical average cost per click</td><td>Compared with the break-even CPC from margin data</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </article>
+
+    <article class="module" id="m7">
+      <div class="module-side"><span class="m-idx">M7</span><h3>Multi-market normalization engine</h3><div class="m-tags"><span class="pill">micros</span><span class="pill">5 currencies</span></div></div>
+      <div class="module-body">
+        <p>Normalization makes markets comparable without hiding their differences. Each value is kept in the account's native currency and, in addition, expressed in a USD equivalent using a dated reference rate stored with the report. Monthly volumes are converted into a seasonality index (month volume divided by the 12-month mean), which shows when demand peaks independent of market size.</p>
+        <div class="dtable-wrap"><table class="dtable">
+          <thead><tr><th>Market</th><th>Geo target</th><th>Language</th><th>Currency</th><th>Hemisphere</th></tr></thead>
+          <tbody>
+            <tr><th>United States</th><td><code>2840</code></td><td><code>1000</code> English</td><td>USD</td><td>Northern</td></tr>
+            <tr><th>United Kingdom</th><td><code>2826</code></td><td><code>1000</code> English</td><td>GBP</td><td>Northern</td></tr>
+            <tr><th>Germany</th><td><code>2276</code></td><td><code>1001</code> German</td><td>EUR</td><td>Northern</td></tr>
+            <tr><th>Switzerland</th><td><code>2756</code></td><td><code>1001</code> German · <code>1002</code> French · <code>1004</code> Italian</td><td>CHF</td><td>Northern</td></tr>
+            <tr><th>Australia</th><td><code>2036</code></td><td><code>1000</code> English</td><td>AUD</td><td>Southern</td></tr>
+          </tbody>
+        </table></div>
+        <div class="formula">value = <span class="hl">cost_micros / 1,000,000</span>   <span style="color:#6e819e">// e.g. 1130000 micros = 1.13 USD</span><br>seasonality_index[m] = <span class="hl">volume[m] / mean(volume[1..12])</span></div>
+      </div>
+    </article>
+
+    <article class="module" id="m8">
+      <div class="module-side"><span class="m-idx">M8</span><h3>Structured reporting exports</h3><div class="m-tags"><span class="pill">JSON</span><span class="pill">CSV</span></div></div>
+      <div class="module-body">
+        <p>Every module writes a structured export partitioned by market and date. JSON keeps nested context such as monthly volumes; CSV is UTF-8 encoded with a header row and comma separators for spreadsheet use. Export files are written with file mode <code>0600</code> and are not shared with third parties.</p>
+<pre data-lang="json" data-label="JSON · campaign performance row">
+{
+  "schema": "lmc.campaign_performance.v1",
+  "market": "CH",
+  "customer_currency": "CHF",
+  "date": "2026-11-23",
+  "campaign_id": "21000000001",
+  "channel": "SHOPPING",
+  "impressions": 18240,
+  "clicks": 296,
+  "cost": 261.48,
+  "conversions": 7.0,
+  "conversion_value": 1106.30,
+  "roas": 4.23,
+  "cost_usd_equiv": 296.12,
+  "fx_rate_date": "2026-11-23"
+}
+</pre>
+<pre data-lang="csv" data-label="CSV · keyword benchmark export">
+market,keyword,language_id,geo_id,avg_monthly_searches,competition,competition_index,low_top_bid,high_top_bid,avg_cpc,currency,peak_month,seasonality_peak_index
+US,linen dress,1000,2840,40500,HIGH,87,0.62,1.94,1.13,USD,JUNE,1.83
+AU,linen dress,1000,2036,9900,HIGH,79,0.58,1.71,0.98,AUD,DECEMBER,1.94
+DE,leinenkleid damen,1001,2276,22200,MEDIUM,58,0.28,0.91,0.49,EUR,JUNE,1.76
+</pre>
+        <p class="small muted">Sample rows are illustrative and do not represent real advertiser data.</p>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section class="cta-band band-dark">
+  <div class="wrap cta-inner">
+    <div>
+      <h2>See how the numbers are interpreted.</h2>
+      <p>The methodology guide explains seasonality modeling, hemisphere calendars, break-even ROAS and catalog title optimization.</p>
+    </div>
+    <div class="btn-row"><a class="btn btn-light" href="/methodology/">Read the methodology <span class="arr" aria-hidden="true">&rarr;</span></a><a class="btn btn-outline-light" href="/security/">Security &amp; compliance</a></div>
+  </div>
+</section>
