@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lumora Media Commerce - E-Commerce Brand Operations &amp; Performance Analytics</title>
-  <meta name="description" content="Lumora Media Commerce is the digital commerce operations and advertising analytics unit of Lumora Media LLC, based in Sheridan, Wyoming." />
+  <title>Lumora Media Commerce - Google Ads Analytics &amp; E-Commerce Operations</title>
+  <meta name="description" content="Lumora Media Commerce is the e-commerce advertising analytics, campaign reporting, and Keyword Planner demand research platform operated by Lumora Media LLC." />
   <style>
     :root {
       --bg: #f8f7f4;
       --surface: #ffffff;
       --ink: #14181f;
-      --muted: #525b68;
+      --muted: #4b5563;
       --line: #e4e2dc;
       --accent: #1b3a5c;
       --accent-soft: #eef3f8;
@@ -21,15 +21,25 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg);
       color: var(--ink);
-      line-height: 1.6;
+      line-height: 1.65;
       -webkit-font-smoothing: antialiased;
     }
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
-    .container { max-width: 1020px; margin: 0 auto; padding: 0 24px; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88em;
+      background: #f1f3f5;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .container { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
     header {
       border-bottom: 1px solid var(--line);
       background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     .nav {
       display: flex;
@@ -41,21 +51,21 @@
     }
     .brand {
       font-weight: 700;
-      font-size: 1.05rem;
+      font-size: 1.06rem;
       letter-spacing: -0.01em;
       color: var(--ink);
     }
     .brand span { color: var(--accent); }
     .nav-links {
       display: flex;
-      gap: 24px;
+      gap: 22px;
       font-size: 0.92rem;
-      color: var(--muted);
+      flex-wrap: wrap;
     }
     .nav-links a { color: var(--muted); font-weight: 500; }
     .nav-links a:hover { color: var(--ink); }
     .hero {
-      padding: 84px 0 68px;
+      padding: 80px 0 68px;
       border-bottom: 1px solid var(--line);
     }
     .eyebrow {
@@ -68,24 +78,24 @@
       background: var(--accent-soft);
       padding: 6px 12px;
       border-radius: 999px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
     h1 {
-      font-size: clamp(2rem, 4.2vw, 3.1rem);
-      line-height: 1.15;
+      font-size: clamp(2.1rem, 4.2vw, 3.15rem);
+      line-height: 1.14;
       letter-spacing: -0.025em;
-      margin: 0 0 20px;
-      max-width: 780px;
+      margin: 0 0 18px;
+      max-width: 820px;
     }
     .lead {
       font-size: 1.12rem;
       color: var(--muted);
-      max-width: 680px;
-      margin: 0 0 32px;
+      max-width: 740px;
+      margin: 0 0 28px;
     }
     .cta-row {
       display: flex;
-      gap: 14px;
+      gap: 12px;
       flex-wrap: wrap;
     }
     .btn {
@@ -95,38 +105,47 @@
       font-weight: 600;
       font-size: 0.94rem;
     }
-    .btn-primary {
-      background: var(--accent);
-      color: #ffffff;
-    }
+    .btn-primary { background: var(--accent); color: #ffffff; }
     .btn-primary:hover { background: #132c47; text-decoration: none; }
-    .btn-secondary {
-      background: var(--surface);
-      color: var(--ink);
-      border: 1px solid var(--line);
-    }
+    .btn-secondary { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
     .btn-secondary:hover { border-color: #c5c2ba; text-decoration: none; }
     section { padding: 64px 0; border-bottom: 1px solid var(--line); }
     h2 {
-      font-size: 1.6rem;
+      font-size: 1.65rem;
       letter-spacing: -0.02em;
       margin: 0 0 12px;
     }
     .section-intro {
       color: var(--muted);
-      max-width: 660px;
-      margin: 0 0 36px;
+      max-width: 740px;
+      margin: 0 0 34px;
+      font-size: 1rem;
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
     }
     .card {
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 12px;
       padding: 26px;
+    }
+    .step-num {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 12px;
     }
     .card h3 {
       margin: 0 0 10px;
@@ -137,6 +156,36 @@
       margin: 0;
       font-size: 0.94rem;
       color: var(--muted);
+    }
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    th {
+      background: #f3f2ee;
+      font-weight: 600;
+      color: var(--ink);
+      width: 28%;
+    }
+    td { color: var(--muted); }
+    .faq-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
     }
     .info-box {
       background: var(--surface);
@@ -168,7 +217,7 @@
       flex-wrap: wrap;
       gap: 16px;
     }
-    .footer-links { display: flex; gap: 20px; }
+    .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
   </style>
 </head>
 <body>
@@ -176,9 +225,11 @@
     <div class="container nav">
       <a class="brand" href="/">Lumora Media <span>Commerce</span></a>
       <nav class="nav-links">
-        <a href="#operations">Operations</a>
-        <a href="#platform">Analytics Platform</a>
-        <a href="#contact">Company &amp; Contact</a>
+        <a href="#features">Features</a>
+        <a href="#workflow">How It Works</a>
+        <a href="#google-api">Google Ads API</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Company</a>
         <a href="/privacy/">Privacy Policy</a>
         <a href="/terms/">Terms of Service</a>
       </nav>
@@ -191,57 +242,148 @@
         <div class="eyebrow">Lumora Media LLC - Sheridan, Wyoming</div>
         <h1>Lumora Media Commerce</h1>
         <p class="lead">
-          <strong>Lumora Media Commerce</strong> is the internal Google Ads analytics, campaign reporting, and Keyword Planner research application operated by Lumora Media LLC. It connects our authorized Google Ads Manager Accounts to monitor campaign performance, analyze historical search demand, and plan product assortments for our owned direct-to-consumer e-commerce brands.
+          <strong>Lumora Media Commerce</strong> is an e-commerce advertising analytics, campaign reporting, and Keyword Planner search-demand application built and operated by <strong>Lumora Media LLC</strong>. It connects authorized Google Ads Manager Accounts via the Google Ads API to measure shopping and search campaign profitability, benchmark seasonal keyword demand across international markets, and coordinate product catalog merchandising.
         </p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="#platform">About the Application</a>
-          <a class="btn btn-secondary" href="/privacy/">Privacy Policy</a>
+          <a class="btn btn-primary" href="#workflow">How the Application Works</a>
+          <a class="btn btn-secondary" href="/privacy/">Read Privacy Policy</a>
           <a class="btn btn-secondary" href="/terms/">Terms of Service</a>
         </div>
       </div>
     </div>
 
-    <section id="operations">
+    <section id="features">
       <div class="container">
-        <h2>Core Capabilities</h2>
+        <h2>Core Capabilities of Lumora Media Commerce</h2>
         <p class="section-intro">
-          We manage end-to-end commercial operations strictly for first-party retail properties owned and operated by Lumora Media LLC.
+          Lumora Media LLC operates direct-to-consumer online retail brands across the United States, United Kingdom, Germany, Switzerland, and Australia. Lumora Media Commerce provides structured campaign telemetry and search-market data to guide merchandising, bidding, and inventory decisions.
         </p>
         <div class="grid">
           <div class="card">
-            <h3>Multi-Market Retail Operations</h3>
-            <p>Assortment curation, localized storefront engineering, structured product feeds, and international fulfillment coordination for our own e-commerce brands.</p>
+            <h3>Keyword Planner Demand Research</h3>
+            <p>Queries historical monthly search volumes, 12-month seasonality curves, competition levels, and historical average CPC benchmarks through the Google Ads Keyword Planner API to identify commercial product demand by country and language.</p>
           </div>
           <div class="card">
-            <h3>Search &amp; Demand Intelligence</h3>
-            <p>Internal keyword demand analysis, seasonal assortment planning, and market-level search benchmarking powered by direct Google Ads API integrations.</p>
+            <h3>Keyword Idea Discovery</h3>
+            <p>Generates related commercial search queries from curated category seeds to evaluate regional language variations, seasonal demand shifts, and long-tail product opportunities before expanding catalog assortments.</p>
           </div>
           <div class="card">
-            <h3>Campaign Reporting &amp; Attribution</h3>
-            <p>Centralized campaign monitoring, product-level ROAS evaluation, and automated reporting across our managed Google Ads accounts.</p>
+            <h3>Campaign &amp; Product-Level Reporting</h3>
+            <p>Reads campaign, ad group, search term, and Shopping product-group metrics via Google Ads Query Language (GAQL) to calculate return on ad spend (ROAS), click-through rate, conversion rate, and cost per acquisition.</p>
+          </div>
+          <div class="card">
+            <h3>Multi-Market Currency &amp; Geo Normalization</h3>
+            <p>Aligns account currencies (USD, GBP, EUR, CHF, AUD), geographic target constants, and hemisphere seasonality across separate regional storefront accounts managed under one Google Ads Manager Account.</p>
+          </div>
+          <div class="card">
+            <h3>Search Term &amp; Negative Keyword Auditing</h3>
+            <p>Reviews delivered search queries against catalog taxonomy to surface irrelevant or non-commercial traffic, supporting clean campaign structures and efficient advertising spend allocation.</p>
+          </div>
+          <div class="card">
+            <h3>Feed &amp; Assortment Alignment</h3>
+            <p>Compares live Shopping product performance against Merchant Center feed attributes and regional search demand so high-demand items stay accurately titled, categorized, and stocked.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="platform">
+    <section id="workflow">
       <div class="container">
-        <h2>About the Lumora Media Commerce Application</h2>
+        <h2>How Lumora Media Commerce Works</h2>
         <p class="section-intro">
-          <strong>Lumora Media Commerce</strong> is a Google Ads API reporting and Keyword Planner analytics application operated by Lumora Media LLC. All product information, company details, and privacy disclosures are publicly available on this website with no login required.
+          The application runs as a desktop and server-side analytics tool for Lumora Media LLC's advertising team, using standard OAuth 2.0 authorization with the official Google Ads REST API.
         </p>
-        <div class="grid">
+        <div class="steps">
           <div class="card">
-            <h3>What the Application Does</h3>
-            <p>Connects via Google OAuth 2.0 (<code>https://www.googleapis.com/auth/adwords</code>) to authorized Google Ads Manager Accounts to read account metadata, campaign performance statistics, historical Keyword Planner search volumes, and keyword ideas.</p>
+            <div class="step-num">Step 1</div>
+            <h3>OAuth 2.0 Authorization</h3>
+            <p>An authorized Lumora Media LLC Google Ads administrator grants permission via Google OAuth 2.0 using the <code>adwords</code> scope to connect our Manager Account.</p>
           </div>
           <div class="card">
-            <h3>Strict Data &amp; Scope Boundaries</h3>
-            <p>Used strictly for numerical advertising analytics and search-demand research for Lumora Media LLC's own retail accounts. The application does not create, upload, edit, host, or process photos, videos, personal media, or user-generated imagery.</p>
+            <div class="step-num">Step 2</div>
+            <h3>Account &amp; Metric Retrieval</h3>
+            <p>The tool lists accessible Google Ads accounts under the Manager Account and pulls structured performance tables (impressions, clicks, cost, conversions, conversion value).</p>
           </div>
           <div class="card">
-            <h3>Transparent Privacy &amp; Control</h3>
-            <p>Full details on Google user data access, storage, retention, Limited Use compliance, and revocation are published openly in our <a href="/privacy/">Privacy Policy</a> and <a href="/terms/">Terms of Service</a>.</p>
+            <div class="step-num">Step 3</div>
+            <h3>Keyword Demand Lookup</h3>
+            <p>Using <code>generateKeywordHistoricalMetrics</code> and <code>generateKeywordIdeas</code>, the application evaluates search volume and CPC ranges for candidate product categories.</p>
+          </div>
+          <div class="card">
+            <div class="step-num">Step 4</div>
+            <h3>Structured Reporting</h3>
+            <p>Outputs clean JSON and spreadsheet reports used by Lumora Media LLC to optimize ad budgets, refine product titles, and plan seasonal retail assortments.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="google-api">
+      <div class="container">
+        <h2>Google Ads API Integration &amp; Data Governance</h2>
+        <p class="section-intro">
+          Lumora Media Commerce follows strict data minimization and complies fully with the Google API Services User Data Policy, including Limited Use requirements.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr>
+                <th>Application Name</th>
+                <td>Lumora Media Commerce</td>
+              </tr>
+              <tr>
+                <th>Operating Legal Entity</th>
+                <td>Lumora Media LLC (Wyoming Limited Liability Company, United States)</td>
+              </tr>
+              <tr>
+                <th>Google OAuth Scope Requested</th>
+                <td><code>https://www.googleapis.com/auth/adwords</code> (Google Ads API access only; no Gmail, Drive, Calendar, Contacts, or personal consumer account scopes are requested)</td>
+              </tr>
+              <tr>
+                <th>Data Accessed</th>
+                <td>Authorized Google Ads customer metadata, campaign and Shopping performance reports, search term reports, and Keyword Planner historical search metrics and keyword suggestions.</td>
+              </tr>
+              <tr>
+                <th>Purpose of Processing</th>
+                <td>First-party advertising analytics, budget evaluation, and e-commerce product demand research exclusively for retail brands owned and operated by Lumora Media LLC.</td>
+              </tr>
+              <tr>
+                <th>Data Sharing &amp; Storage</th>
+                <td>Google Ads API data is never sold, rented, or shared with third parties. OAuth tokens are encrypted in transit over HTTPS/TLS and stored with strict filesystem permissions. Full details are published in our <a href="/privacy/">Privacy Policy</a>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="container">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-list">
+          <div class="card">
+            <h3>Who operates Lumora Media Commerce?</h3>
+            <p>Lumora Media Commerce is operated by Lumora Media LLC, a Wyoming Limited Liability Company headquartered at 30 N Gould St Ste N, Sheridan, WY 82801, United States.</p>
+          </div>
+          <div class="card">
+            <h3>What is the primary purpose of the app?</h3>
+            <p>The application automates Google Ads performance reporting, Shopping campaign diagnostics, and Keyword Planner search volume research for retail brands owned by Lumora Media LLC.</p>
+          </div>
+          <div class="card">
+            <h3>Does the website require an account to read documentation?</h3>
+            <p>No. All information about Lumora Media Commerce, our Google Ads API scope, our <a href="/privacy/">Privacy Policy</a>, and our <a href="/terms/">Terms of Service</a> is openly accessible on this website.</p>
+          </div>
+          <div class="card">
+            <h3>How can OAuth access be revoked?</h3>
+            <p>Authorized Google account holders can revoke Lumora Media Commerce's API permissions at any time in their Google Account Third-Party Connections settings or request deletion via <a href="mailto:info@lumoramediacommerce.com">info@lumoramediacommerce.com</a>.</p>
+          </div>
+          <div class="card">
+            <h3>Which geographic markets are supported?</h3>
+            <p>Our retail and analytics workflows cover North America, Europe (Germany, Switzerland, United Kingdom), and Oceania (Australia), using localized Google Ads geo-target and language constants.</p>
+          </div>
+          <div class="card">
+            <h3>How does Lumora Media Commerce protect API data?</h3>
+            <p>All API communication uses TLS encryption, OAuth 2.0 with PKCE, and least-privilege credentials. No customer payment card data or unrelated personal Google workspace data is accessed.</p>
           </div>
         </div>
       </div>
@@ -249,7 +391,7 @@
 
     <section id="contact">
       <div class="container">
-        <h2>Corporate Information</h2>
+        <h2>Company &amp; Contact Information</h2>
         <div class="info-box">
           <div>
             <div class="info-label">Legal Entity</div>
@@ -260,10 +402,10 @@
             <div class="info-val">30 N Gould St Ste N<br />Sheridan, WY 82801<br />United States</div>
           </div>
           <div>
-            <div class="info-label">Contact</div>
+            <div class="info-label">Official Contact</div>
             <div class="info-val">
               Email: <a href="mailto:info@lumoramediacommerce.com">info@lumoramediacommerce.com</a><br />
-              Domain: lumoramediacommerce.com
+              Website: <a href="https://www.lumoramediacommerce.com/">www.lumoramediacommerce.com</a>
             </div>
           </div>
         </div>
