@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lumora Media Commerce - E-Commerce Brand Operations &amp; Performance Analytics</title>
+  <meta name="description" content="Lumora Media Commerce is the digital commerce operations and advertising analytics unit of Lumora Media LLC, based in Sheridan, Wyoming." />
+  <style>
+    :root {
+      --bg: #f8f7f4;
+      --surface: #ffffff;
+      --ink: #14181f;
+      --muted: #525b68;
+      --line: #e4e2dc;
+      --accent: #1b3a5c;
+      --accent-soft: #eef3f8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 1020px; margin: 0 auto; padding: 0 24px; }
+    header {
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .brand span { color: var(--accent); }
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+    .nav-links a { color: var(--muted); font-weight: 500; }
+    .nav-links a:hover { color: var(--ink); }
+    .hero {
+      padding: 84px 0 68px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: clamp(2rem, 4.2vw, 3.1rem);
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      margin: 0 0 20px;
+      max-width: 780px;
+    }
+    .lead {
+      font-size: 1.12rem;
+      color: var(--muted);
+      max-width: 680px;
+      margin: 0 0 32px;
+    }
+    .cta-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.94rem;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+    }
+    .btn-primary:hover { background: #132c47; text-decoration: none; }
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    .btn-secondary:hover { border-color: #c5c2ba; text-decoration: none; }
+    section { padding: 64px 0; border-bottom: 1px solid var(--line); }
+    h2 {
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      margin: 0 0 12px;
+    }
+    .section-intro {
+      color: var(--muted);
+      max-width: 660px;
+      margin: 0 0 36px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 26px;
+    }
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.08rem;
+      letter-spacing: -0.01em;
+    }
+    .card p {
+      margin: 0;
+      font-size: 0.94rem;
+      color: var(--muted);
+    }
+    .info-box {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 28px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+    }
+    .info-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .info-val { font-size: 0.96rem; color: var(--ink); }
+    footer {
+      padding: 36px 0 48px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-links { display: flex; gap: 20px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="/">Lumora Media <span>Commerce</span></a>
+      <nav class="nav-links">
+        <a href="#operations">Operations</a>
+        <a href="#platform">Analytics Platform</a>
+        <a href="#contact">Company &amp; Contact</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="container">
+        <div class="eyebrow">Lumora Media LLC - Sheridan, Wyoming</div>
+        <h1>Direct-to-Consumer E-Commerce Operations &amp; Advertising Analytics</h1>
+        <p class="lead">
+          Lumora Media Commerce operates owned direct-to-consumer retail brands across North America, Europe, and Oceania, supported by proprietary catalog engineering, search demand research, and performance marketing infrastructure.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#contact">Contact Lumora Media</a>
+          <a class="btn btn-secondary" href="/privacy">Privacy &amp; API Data Policy</a>
+        </div>
+      </div>
+    </div>
+
+    <section id="operations">
+      <div class="container">
+        <h2>Core Capabilities</h2>
+        <p class="section-intro">
+          We manage end-to-end commercial operations strictly for first-party retail properties owned and operated by Lumora Media LLC.
+        </p>
+        <div class="grid">
+          <div class="card">
+            <h3>Multi-Market Retail Operations</h3>
+            <p>Assortment curation, localized storefront engineering, structured product feeds, and international fulfillment coordination for our own e-commerce brands.</p>
+          </div>
+          <div class="card">
+            <h3>Search &amp; Demand Intelligence</h3>
+            <p>Internal keyword demand analysis, seasonal assortment planning, and market-level search benchmarking powered by direct Google Ads API integrations.</p>
+          </div>
+          <div class="card">
+            <h3>Campaign Reporting &amp; Attribution</h3>
+            <p>Centralized campaign monitoring, product-level ROAS evaluation, and automated reporting across our managed Google Ads accounts.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="platform">
+      <div class="container">
+        <h2>Lumora Media Commerce Internal Analytics Application</h2>
+        <p class="section-intro">
+          The <strong>Lumora Media Commerce</strong> application is an internal software integration developed by Lumora Media LLC to connect our authorized Google Ads Manager Accounts with internal reporting, product feed auditing, and Keyword Planner demand research tools. Access is restricted exclusively to authorized Lumora Media LLC administrators.
+        </p>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <h2>Corporate Information</h2>
+        <div class="info-box">
+          <div>
+            <div class="info-label">Legal Entity</div>
+            <div class="info-val">Lumora Media LLC<br />Wyoming Limited Liability Company</div>
+          </div>
+          <div>
+            <div class="info-label">Registered Office</div>
+            <div class="info-val">30 N Gould St Ste N<br />Sheridan, WY 82801<br />United States</div>
+          </div>
+          <div>
+            <div class="info-label">Contact</div>
+            <div class="info-val">
+              Email: <a href="mailto:info@lumoramediacommerce.com">info@lumoramediacommerce.com</a><br />
+              Domain: lumoramediacommerce.com
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <div>&copy; 2026 Lumora Media LLC. All rights reserved.</div>
+      <div class="footer-links">
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+        <a href="mailto:info@lumoramediacommerce.com">info@lumoramediacommerce.com</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
